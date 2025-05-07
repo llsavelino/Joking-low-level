@@ -20,8 +20,7 @@ typedef union {
     };    volatile uint8_t reg;                  // Permite acesso ao registrador completo
 } BITSregPortB_t;
 
-// Declaração do PORTB_REG
-extern BITSregPortB_t PORTB_REG;
+#define PORTB_REG (*(volatile BITSregPortB_t *)&PORTB)
 
 #ifdef __cplusplus
 extern "C" {
