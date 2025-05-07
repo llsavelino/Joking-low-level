@@ -2,9 +2,6 @@
 #include <avr/interrupt.h>
 #include "registerB.h"
 
-// Definição do PORTB_REG
-BITSregPortB_t PORTB_REG;
-
 // Implementação do setup
 void setup(void) {
      DDRB &=  ~( 1 << PB5 );
