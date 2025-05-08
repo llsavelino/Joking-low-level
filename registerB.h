@@ -22,6 +22,16 @@ typedef union {
 
 #define PORTB_REG (*(volatile BITSregPortB_t *)&PORTB)
 
+typedef struct {
+    union {
+        void (*taskFnSp)(void);
+        void (*taskFnCp)(uint8_t);
+    };
+    volatile unsigned int interval;
+    volatile unsigned int count;
+    volatile uint8_t         ok;
+} OS; extern OS operatingSystem[ 0x02 ];
+
 #ifdef __cplusplus
 extern "C" {
 #endif
