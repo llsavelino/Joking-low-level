@@ -12,7 +12,7 @@ void setup(void) {
 
     TCCR1A = 0x00; // Modo normal
     TCCR1B = (0x01 << WGM12) | (0x01 << CS12) | (0x00 << CS11) | (0x01 << CS10); // CTC, prescaler 64
-    OCR1A = 0x100; // Conta até 256 (?) para calcular o ? multiplicar com ?
+    OCR1A = 0xff; // Conta até 255 (?) para calcular o ? multiplicar com ?
     TIMSK1 |= (0x01 << OCIE1A); // Habilita interrupção de comparação A
 
     // --- Configura Timer2 para Fast PWM no pino OC2B ---
