@@ -4,9 +4,9 @@
 
 // Implementação do setup
 void setup(void) {
-     DDRB &=  ~( 1 << PB5 );
-     DDRB |=   ( 1 << PB5 );
-     PORTB &= ~( 1 << PB5 );
+     DDRB &=  ~( 0x01 << PB5 );
+     DDRB |=  ( !0x00 << PB5 );
+     PORTB &= ~( 0x01 << PB5 );
 
     TCCR1A = 0x00; // Modo normal
     TCCR1B = (1 << WGM12) | (1 << CS12) | (0 << CS11) | (1 << CS10); // CTC, prescaler 64
