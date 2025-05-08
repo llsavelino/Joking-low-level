@@ -3,10 +3,10 @@
 #include "registerB.h"
 
 // Protótipo correto da função
-void swpa(void);
+void toggle(void);
 
 // Inicializa a tarefa
-operatingSystem tasks[NUM_TASKS] = {{ swpa, 500, 0x00, 0x00 }};
+operatingSystem tasks[NUM_TASKS] = {{ toggle, 500, 0x00, 0x00 }};
 
 void setup(void) {
     // Configura PB5 como saída
@@ -39,4 +39,4 @@ ISR(TIMER1_COMPA_vect) {
 }
 
 // Alterna o estado de PB5 (LED)
-void swpa(void) { PORTB_REG.pb5 ^= 0x01; }
+void toggle(void) { PORTB_REG.pb5 ^= 0x01; }
