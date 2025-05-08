@@ -29,6 +29,7 @@ typedef struct {
     unsigned long interval_ms;      // Intervalo de execução em ms
     volatile unsigned long counter; // Contador da tarefa
     volatile uint8_t ok;            // Flag de execução
+    uint8_t padding[0x03];
 } operatingSystem;
 
 extern operatingSystem tasks[NUM_TASKS];
