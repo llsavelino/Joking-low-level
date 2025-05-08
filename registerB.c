@@ -2,34 +2,41 @@
 #include <avr/interrupt.h>
 #include "registerB.h"
 
-static volatile uint8_t pwm = 0x00;
-static volatile int direcao = 0x01;
+// Protótipo correto da função
+void swpa(void);
 
-// Implementação do setup
+// Inicializa a tarefa
+Task tasks[NUM_TASKS] = {{ swpa, 500, 0x00, 0x00 }};
+
 void setup(void) {
-     DDRB |= (( !0x00 << PB5 ) | ( !0x00 << PB4 ));
-     PORTB &= ~(( 0x01 << PB5 ) | ( 0x01 << PB4 ));
+    // Configura PB5 como saída
+    DDRB |=   (0x01 << PB5);
+    PORTB &= ~(0x01 << PB5); // Começa desligado
 
-    TCCR1A = 0x00; // Modo normal
-    TCCR1B = (0x01 << WGM12) | (0x01 << CS12) | (0x00 << CS11) | (0x01 << CS10); // CTC, prescaler 64
-    OCR1A = 0xff; // Conta até 255 (?) para calcular o ? multiplicar com ?
-    TIMSK1 |= (0x01 << OCIE1A); // Habilita interrupção de comparação A
+    // Configura Timer1 em modo CTC com prescaler 64
+    TCCR1A = 0;
+    TCCR1B = (1 << WGM12) | (0 << CS12) |(1 << CS11) | (1 << CS10); // 64x prescaler, modo CTC
+    OCR1A = 250; // 16MHz / 64 = 250kHz → 250 ciclos = 1 ms
+    TIMSK1 |= (1 << OCIE1A); // Habilita interrupção por comparação A
 
-    // --- Configura Timer2 para Fast PWM no pino OC2B ---
-    TCCR2A = (0x01 << COM2B1) | (0x01 << WGM21) | (0x01 << WGM20); // Fast PWM, não-invertido
-    TCCR2B = (0x01 << CS21); // Prescaler = 8
-    OCR2B = pwm;
+    sei(); // Habilita interrupções globais
 }
 
-// Implementação do loop
-void loop(void) { }
+void loop(void) {
+    if (tasks[0x00].ok) {
+        tasks[0x00].ok = 0x00;
+        tasks[0x00].func(); // Executa a tarefa
+    }
+}
 
-// Manipulador de interrupção
+// Interrupção de Timer1 a cada 1ms
 ISR(TIMER1_COMPA_vect) {
-    static uint8_t timeCount = 0x00;
-    ++timeCount;
-    if (timeCount == 0xCB) { PORTB_REG.pb5 ^= 0x01; timeCount = 0x00; }
-    pwm += direcao;
-    if (pwm == 0xff || pwm == 0x00) { direcao = -direcao; /* Inverte direção quando atinge os limites */ }
-    OCR2B = pwm;
+    tasks[0x00].counter++;
+    if (tasks[0x00].counter >= tasks[0x00].interval_ms) {
+        tasks[0x00].counter = 0x00;
+        tasks[0x00].ok = 0x01;
+    }
 }
+
+// Alterna o estado de PB5 (LED)
+void swpa(void) { PORTB_REG.pb5 ^= 0x01; }
