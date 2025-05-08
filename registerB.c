@@ -6,7 +6,7 @@
 void swpa(void);
 
 // Inicializa a tarefa
-Task tasks[NUM_TASKS] = {{ swpa, 500, 0x00, 0x00 }};
+operatingSystem tasks[NUM_TASKS] = {{ swpa, 500, 0x00, 0x00 }};
 
 void setup(void) {
     // Configura PB5 como saída
