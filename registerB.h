@@ -22,23 +22,26 @@ typedef union {
 
 #define PORTB_REG (*(volatile BITSregPortB_t *)&PORTB)
 
+#define NUM_TASKS 1
+
 typedef struct {
-    union {
-        void (*taskFnSp)(void);
-        void (*taskFnCp)(uint8_t);
-    };
-    volatile unsigned int interval;
-    volatile unsigned int count;
-    volatile uint8_t         ok;
-} OS; extern OS operatingSystem[ 0x02 ];
+    void (*func)(void);             // Ponteiro para a função da tarefa
+    unsigned long interval_ms;      // Intervalo de execução em ms
+    volatile unsigned long counter; // Contador da tarefa
+    volatile uint8_t ok;            // Flag de execução
+} Task;
+
+extern Task tasks[NUM_TASKS];
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-// Declaração das funções
+
 void setup(void);
 void loop(void);
+
 #ifdef __cplusplus
 }
 #endif
+
 #endif // REGB_H
