@@ -22,13 +22,10 @@ typedef union {
 
 #define PORTB_REG (*(volatile BITSregPortB_t *)&PORTB)
 
-#define NUM_TASKS 2
+#define NUM_TASKS 1
 
 typedef struct {
-    union {
-        void (*funcSp)(void);             // Ponteiro para a função da tarefa
-        void (*funcCp)(uint8_t);
-    };
+    void (*func)(void);             // Ponteiro para a função da tarefa
     unsigned long interval_ms;      // Intervalo de execução em ms
     volatile unsigned long counter; // Contador da tarefa
     volatile uint8_t ok;            // Flag de execução
