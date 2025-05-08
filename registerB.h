@@ -20,6 +20,13 @@ typedef union {
     };    volatile uint8_t reg;                  // Permite acesso ao registrador completo
 } BITSregPortB_t;
 
+typedef struct {
+  void (*func)();  // ponteiro para a função da tarefa
+  unsigned long interval_ms; // intervalo entre execuções
+  volatile unsigned long counter; // contador interno
+  volatile bool ready; // se a tarefa está pronta
+} TaskOS; extern TaskOS operatingSystem;
+
 #define PORTB_REG (*(volatile BITSregPortB_t *)&PORTB)
 
 #ifdef __cplusplus
