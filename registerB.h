@@ -1,7 +1,6 @@
 #pragma once
 #ifndef REGB_H
 #define REGB_H
-
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
@@ -21,29 +20,26 @@ typedef union {
 } BITSregPortB_t;
 
 #define PORTB_REG (*(volatile BITSregPortB_t *)&PORTB)
-
-#define NUM_TASKS 1
+#define NUM_TASKS 0x02
 
 typedef struct {
-    void (*func)(void);             // Ponteiro para a função da tarefa
+    union {
+      void (*funcSp)(void);             // Ponteiro para a função da tarefa
+      void (*funcCp)(volatile uint8_t, volatile int);
+    };
     volatile uint8_t SPorCP;
     unsigned long interval_ms;      // Intervalo de execução em ms
     volatile unsigned long counter; // Contador da tarefa
     volatile uint8_t ok;            // Flag de execução
-    uint8_t padding[0x03];
-} operatingSystem;
-
-extern operatingSystem tasks[NUM_TASKS];
+    uint8_t padding[  0x02  ];
+} operatingSystem; extern operatingSystem tasks[NUM_TASKS];
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 void setup(void);
 void loop(void);
-
 #ifdef __cplusplus
 }
 #endif
-
 #endif // REGB_H
