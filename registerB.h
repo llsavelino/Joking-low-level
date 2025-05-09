@@ -26,6 +26,7 @@ typedef union {
 
 typedef struct {
     void (*func)(void);             // Ponteiro para a função da tarefa
+    bool SPorCP;
     unsigned long interval_ms;      // Intervalo de execução em ms
     volatile unsigned long counter; // Contador da tarefa
     volatile uint8_t ok;            // Flag de execução
