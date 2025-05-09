@@ -7,7 +7,11 @@ void toggle(void);
 
 // Inicializa a tarefa
 operatingSystem tasks[NUM_TASKS] = {
-    { .func = toggle, .interval_ms = 0x1F4, .counter = 0x00, .ok = false, .padding = {0x00, 0x00, 0x00} }
+    { .func = toggle, .SPorCP = false, .interval_ms = 0x1F4, .counter = 0x00, .ok = false, .padding = 
+        {
+            0b00000000, 0b00000000, 0b00000000
+        } 
+    }
 };
 
 void setup(void) {
@@ -25,18 +29,19 @@ void setup(void) {
 }
 
 void loop(void) {
-    if (tasks[0x00].ok) {
-        tasks[0x00].ok = 0x00;
-        tasks[0x00].func(); // Executa a tarefa
+    for (int i = 0; i < NUM_TASKS; ++i) {
+        if (tasks[i].ok && !tasks[i].SPorCP) { tasks[i].ok = 0x00; tasks[i].func(); }
     }
 }
 
 // Interrupção de Timer1 a cada 1ms
 ISR(TIMER1_COMPA_vect) {
-    tasks[0x00].counter++;
-    if (tasks[0x00].counter >= tasks[0x00].interval_ms) {
-        tasks[0x00].counter = 0x00;
-        tasks[0x00].ok = 0x01;
+    for (int i = 0; i < NUM_TASKS; ++i) {
+        tasks[i].counter++;
+        if (tasks[i].counter >= tasks[i].interval_ms) {
+            tasks[i].counter = 0x00;
+            tasks[i].ok = 0x01;
+        }
     }
 }
 
