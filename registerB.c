@@ -6,7 +6,9 @@
 void toggle(void);
 
 // Inicializa a tarefa
-operatingSystem tasks[NUM_TASKS] = {{ toggle, 500, 0x00, 0x00 }};
+operatingSystem tasks[NUM_TASKS] = {
+    { .func = toggle, .interval_ms = 0x1F4, .counter = 0x00, .ok = false, .padding = {0x00, 0x00, 0x00} }
+};
 
 void setup(void) {
     // Configura PB5 como saída
