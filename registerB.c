@@ -7,7 +7,7 @@ void toggle(void);
 
 // Inicializa a tarefa
 operatingSystem tasks[NUM_TASKS] = {
-    { .func = toggle, .SPorCP = false, .interval_ms = 0x1F4, .counter = 0x00, .ok = false, .padding = 
+    { .func = toggle, .SPorCP = 0x00, .interval_ms = 0x1F4, .counter = 0x00, .ok = 0x00, .padding = 
         {
             0b00000000, 0b00000000, 0b00000000
         } 
