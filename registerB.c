@@ -49,8 +49,8 @@ void setup(void) {
 void loop(void) {
     for (int i = 0; i < NUM_TASKS; ++i) {
         if (tasks[i].ok) {
-            if      (i == 0x01) tasks[i].funcSp();
-            else if (i == 0x02) tasks[i].funcCp(pwm, posineg);
+            if      (i == 0x00) tasks[i].funcSp();
+            else if (i == 0x01) tasks[i].funcCp(pwm, posineg);
             else                tasks[i].funcSp();
             tasks[i].ok = false;
         }
@@ -63,7 +63,7 @@ ISR(TIMER1_COMPA_vect) {
         
         tasks[i].counter++;
         
-        if (tasks[i].counter >= tasks[i].interval_ms) { tasks[i].counter = 0x00; tasks[i].ok = 0x01; }
+        if (tasks[i].counter >= tasks[i].interval_ms) { tasks[i].counter = 0x00; tasks[i].ok = true; }
     }
 }
 
