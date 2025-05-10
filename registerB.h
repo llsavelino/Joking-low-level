@@ -5,7 +5,6 @@
 #include <stdbool.h>
 #include <avr/interrupt.h>
 
-// Definição do tipo BITSregPortB_t
 typedef union {
     struct {
         unsigned int: 0b00000000u;                                        volatile uint8_t
@@ -25,14 +24,13 @@ typedef union {
 
 typedef struct {
     union {
-      void (*funcSp)(void);             // Ponteiro para a função da tarefa
+      void (*funcSp)(void);          // Ponteiro para a função da tarefa
       void (*funcCp)(volatile uint8_t, volatile int);
     };
-    volatile bool SPorCP;
-    unsigned long interval_ms;      // Intervalo de execução em ms
-    volatile unsigned long counter; // Contador da tarefa
-    volatile bool ok;            // Flag de execução
-    uint8_t padding[  0x02  ];
+    unsigned int interval_ms;       // Intervalo de execução em ms
+    volatile unsigned int counter;  // Contador da tarefa
+    volatile bool ok;                // Flag de execução
+    uint8_t padding[  0x03  ];
 } operatingSystem; extern operatingSystem tasks[NUM_TASKS];
 
 #ifdef __cplusplus
