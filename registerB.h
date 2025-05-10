@@ -2,6 +2,7 @@
 #ifndef REGB_H
 #define REGB_H
 #include <avr/io.h>
+#include <stdbool.h>
 #include <avr/interrupt.h>
 
 // Definição do tipo BITSregPortB_t
@@ -27,10 +28,10 @@ typedef struct {
       void (*funcSp)(void);             // Ponteiro para a função da tarefa
       void (*funcCp)(volatile uint8_t, volatile int);
     };
-    volatile uint8_t SPorCP;
+    volatile bool SPorCP;
     unsigned long interval_ms;      // Intervalo de execução em ms
     volatile unsigned long counter; // Contador da tarefa
-    volatile uint8_t ok;            // Flag de execução
+    volatile bool ok;            // Flag de execução
     uint8_t padding[  0x02  ];
 } operatingSystem; extern operatingSystem tasks[NUM_TASKS];
 
