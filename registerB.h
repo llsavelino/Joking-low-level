@@ -20,7 +20,7 @@ typedef union {
 } BITSregPortB_t;
 
 #define PORTB_REG (*(volatile BITSregPortB_t *)&PORTB)
-#define NUM_TASKS 0x02
+#define NUM_TASKS 0x03
 
 typedef struct {
     union {
