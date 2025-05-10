@@ -1,4 +1,5 @@
 #include <avr/io.h>
+#include <stdbool.h>
 #include <avr/interrupt.h>
 #include "registerB.h"
 
@@ -8,13 +9,13 @@ volatile uint8_t pwm = 0; volatile int posineg = 1;
 
 // Inicializa a tarefa
 operatingSystem tasks[NUM_TASKS] = {
-    { .funcSp = toggle, .SPorCP = 0x00, .interval_ms = 0x1F4, .counter = 0x00, .ok = 0x00, .padding = 
+    { .funcSp = toggle, .SPorCP = false, .interval_ms = 0x1F4, .counter = 0x00, .ok = false, .padding = 
         {
             0b00000000,                                                                    0b00000000
         } 
     }
     ,
-    { .funcCp = analog, .SPorCP = 0x01, .interval_ms = 0x1F4, .counter = 0x00, .ok = 0x00, .padding =
+    { .funcCp = analog, .SPorCP = true, .interval_ms = 0x1F4, .counter = 0x00, .ok = false, .padding =
         {
             0b00000000,                                                                    0b00000000
         }
@@ -42,7 +43,7 @@ void loop(void) {
         if (tasks[i].ok) {
             if (!tasks[i].SPorCP) tasks[i].funcSp();
             else      tasks[i].funcCp(pwm, posineg);
-            tasks[i].ok = 0x00;
+            tasks[i].ok = false;
         }
     }
 }
