@@ -22,7 +22,7 @@ operatingSystem tasks[NUM_TASKS] = {
         }              // arg      qnt         type
     }
     ,
-    { .funcSp = status, .interval_ms = 0x1F4, .counter = 0x00, .ok = false, .padding =
+    { .funcSp = status, .interval_ms = 0x64, .counter = 0x00, .ok = false, .padding =
         {
             /* no args */ 0b00000000, 0b00000000, 0b00000000 
         }                 // arg      qnt         type
@@ -85,4 +85,4 @@ void uart_print(const char* str) { while (*str) { uart_transmit(*str++); } }
 // Alterna o estado de PB5 (LED)
 void toggle(void) { PORTB_REG.pb5 ^= 0x01; }
 void analog(volatile uint8_t i, volatile int y) { i += y; if (i == 0xff || i == 0x00) { y = -y; } OCR2B = i; }
-void status(void) { uart_print("Sistema operacional Cooperativo atuando a cada 1s.\n"); }
+void status(void) { uart_print("Sistema operacional Cooperativo atuando para PB5 & PB0.\n"); }
