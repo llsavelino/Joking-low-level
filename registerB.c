@@ -12,20 +12,20 @@ volatile uint8_t pwm = 0; volatile int posineg = 1;
 operatingSystem tasks[NUM_TASKS] = {
     { .funcSp = toggle, .interval_ms = 0x1F4, .counter = 0x00, .ok = false, .padding = 
         {
-            0b00000000, 0b00000000, 0b00000000
-        } 
+            /* no args */ 0b00000000, 0b00000000, 0b00000000
+        }                 // arg      qnt         type
     }
     ,
     { .funcCp = analog, .interval_ms = 0x1F4, .counter = 0x00, .ok = false, .padding =
         {
-            0b00000000, 0b00000000, 0b00000000
-        }
+            /* args */ 0b00000001, 0b00000010, 0b00000000
+        }              // arg      qnt         type
     }
     ,
     { .funcSp = status, .interval_ms = 0x1F4, .counter = 0x00, .ok = false, .padding =
         {
-            0b00000000, 0b00000000, 0b00000000 
-        }
+            /* no args */ 0b00000000, 0b00000000, 0b00000000 
+        }                 // arg      qnt         type
     }
 };
 
@@ -47,19 +47,19 @@ void setup(void) {
 }
 
 void loop(void) {
-    for (int i = 0; i < NUM_TASKS; ++i) {
+    for (int i = 0x00; i < NUM_TASKS; ++i) {
         if (tasks[i].ok) {
-            if      (i == 0x00) tasks[i].funcSp();
-            else if (i == 0x01) tasks[i].funcCp(pwm, posineg);
-            else                tasks[i].funcSp();
             tasks[i].ok = false;
+            if      (i == 0x00 && tasks[i].padding[i - i] == 0 && tasks[i].padding[1] < 1) tasks[i].funcSp(            );
+            else if (i == 0x01 && tasks[i].padding[i - i] != 0 && tasks[i].padding[1] > 1) tasks[i].funcCp(pwm, posineg);
+            else                                                                           tasks[i].funcSp(            );
         }
     }
 }
 
 // Interrupção de Timer1 a cada 1ms
 ISR(TIMER1_COMPA_vect) {
-    for (int i = 0; i < NUM_TASKS; ++i) {
+    for (int i = 0x00; i < NUM_TASKS; ++i) {
         
         tasks[i].counter++;
         
