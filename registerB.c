@@ -9,6 +9,7 @@ void uart_init(void); void uart_transmit(uint8_t); void uart_print(const char*);
 volatile uint8_t pwm = 0; volatile int posineg = 1;
 
 // Inicializa a tarefa
+#ifdef NUM_TASKS
 operatingSystem tasks[NUM_TASKS] = {
     { .funcSp = toggle, .interval_ms = 0x1F4, .counter = 0x00, .ok = false, .padding = 
         {
@@ -28,6 +29,7 @@ operatingSystem tasks[NUM_TASKS] = {
         }                 // arg      qnt         type
     }
 };
+#endif
 
 void setup(void) {
     // Configura PB5 como saída
