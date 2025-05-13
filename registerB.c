@@ -29,6 +29,8 @@ operatingSystem tasks[NUM_TASKS] = {
         }                 // arg      qnt         type
     }
 };
+#else 
+    #warning NUM_TASKS não definida... Isso pode resultar em erro.
 #endif
 
 void setup(void) {
