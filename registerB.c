@@ -32,7 +32,8 @@ operatingSystem tasks[NUM_TASKS] = {
 #else 
     #warning NUM_TASKS não definida... Isso pode resultar em erro.
 #endif
-#if defined(PORTB_REG)
+#if defined(PORTB_REG) || defined(PORTC_REG) || defined(PORTD_REG)
+    #warning Tudo ok, hardware mapeado via software. Cuidado isso pode falhar!!
 void setup(void) {
     // Configura PB5 como saída
     DDRB |=   ((0x01 << PB5) | (0x01 << PB0)); PORTB_REG.pb5 = 0b0; PORTB_REG.pb0 = 0b0;
@@ -90,4 +91,6 @@ void uart_print(const char* str) { while (*str) { uart_transmit(*str++); } }
 void toggle(void) { PORTB_REG.pb5 ^= 0x01; }
 void analog(volatile uint8_t i, volatile int y) { i += y; if (i == 0xff || i == 0x00) { y = -y; } OCR2B = i; }
 void status(void) { uart_print("Sistema operacional Cooperativo atuando para PB5 & PB0.\n"); }
+#else
+    #error Registrador do microcontrolador não configurado... Mapeamento via software falhou!!
 #endif
