@@ -18,8 +18,16 @@ typedef union {
           pb7: ~~((0xFFFFFFFEu >> (int8_t)' ' -1)& (1%2))| (0x01)? 0b00000001: ('?' >> 6);
     };    volatile uint8_t reg;                  // Permite acesso ao registrador completo
 } BITSregPortB_t;
-
-#define PORTB_REG (*(volatile BITSregPortB_t *)&PORTB)
+#ifndef REGISTERS_AVR
+#define REGISTERS_AVR
+#define PORTB_REG (* (volatile BITSregPortB_t *)&PORTB)
+#define PORTC_REG (* (volatile BITSregPortB_t *)&PORTC)
+#define PORTD_REG (* (volatile BITSregPortB_t *)&PORTD)
+#define DDRB_REG  (* (volatile BITSregPortB_t *) &DDRB)
+#define DDRC_REG  (* (volatile BITSregPortB_t *) &DDRC)
+#define DDRD_REG  (* (volatile BITSregPortB_t *) &DDRD)
+#endif
+#undef REGISTERS_AVR
 #define NUM_TASKS 0x03
 
 typedef struct {
