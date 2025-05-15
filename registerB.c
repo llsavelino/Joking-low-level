@@ -4,13 +4,13 @@
 #include "registerB.h"
 
 // Protótipo correto da função
-void toggle(void); void analog(volatile uint8_t, volatile int); void status(void);
-void uart_init(void); void uart_transmit(uint8_t); void uart_print(const char*);
+static void toggle(void); static void analog(volatile uint8_t, volatile int); static void status(void);
+static void uart_init(void); static void uart_transmit(uint8_t); static void uart_print(const char*);
 volatile uint8_t pwm = 0; volatile int posineg = 1;
 
 // Inicializa a tarefa
 #ifdef NUM_TASKS
-operatingSystem tasks[NUM_TASKS] = {
+static operatingSystem tasks[NUM_TASKS] = {
     { .funcSp = toggle, .interval_ms = 0x1F4, .counter = 0x00, .ok = false, .padding = 
         {
             /* no args */ 0b00000000, 0b00000000, 0b00000000
@@ -72,7 +72,7 @@ ISR(TIMER1_COMPA_vect) {
     }
 }
 
-void uart_init(void) {       /* Parte alta do baud rate | Parte baixa do baud rate  */
+static void uart_init(void) {       /* Parte alta do baud rate | Parte baixa do baud rate  */
     uint16_t ubrr = 103; UBRR0H = (ubrr >> 0x08); UBRR0L = ubrr; 
     /* Fórmula: UBRR = (F_CPU / (16 * BAUD)) - 1 */
     UCSR0A = 0; // (opcional) não usar modo duplo
@@ -80,17 +80,17 @@ void uart_init(void) {       /* Parte alta do baud rate | Parte baixa do baud ra
     UCSR0B = (1 << RXEN0) | (1 << TXEN0);   // Habilita recepção e transmissão
 }
 
-void uart_transmit(uint8_t data) {
+static void uart_transmit(uint8_t data) {
   while (!(UCSR0A & (1 << UDRE0))); // Espera até buffer estar vazio
   UDR0 = data;                      // Escreve o dado
 }
 
-void uart_print(const char* str) { while (*str) { uart_transmit(*str++); } }
+static void uart_print(const char* str) { while (*str) { uart_transmit(*str++); } }
 
 // Alterna o estado de PB5 (LED)
-void toggle(void) { PORTB_REG.pb5 ^= 0x01; }
-void analog(volatile uint8_t i, volatile int y) { i += y; if (i == 0xff || i == 0x00) { y = -y; } OCR2B = i; }
-void status(void) { uart_print("Sistema operacional Cooperativo atuando para PB5 & PB0.\n"); }
+static void toggle(void) { PORTB_REG.pb5 ^= 0x01; }
+static void analog(volatile uint8_t i, volatile int y) { i += y; if (i == 0xff || i == 0x00) { y = -y; } OCR2B = i; }
+static void status(void) { uart_print("Sistema operacional Cooperativo atuando para PB5 & PB0.\n"); }
 #else
     #error Registrador do microcontrolador não configurado... Mapeamento via software falhou!!
 #endif
