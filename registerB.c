@@ -6,7 +6,7 @@
 // Protótipo correto da função
 static void toggle(void); static void analog(volatile uint8_t, volatile int); static void status(void);
 static void uart_init(void); static void uart_transmit(uint8_t); static void uart_print(const char*);
-volatile uint8_t pwm = 0; volatile int posineg = 1;
+static volatile uint8_t pwm = 0; static volatile int posineg = 1;
 
 // Inicializa a tarefa
 #ifdef NUM_TASKS
