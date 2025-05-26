@@ -42,6 +42,7 @@ const char* monitor[LINE][COLUMN] = {
 #elif defined(PORTB_REG) || defined(PORTC_REG) || defined(PORTD_REG)
     #warning Tudo ok, hardware mapeado via software. Cuidado isso pode falhar!!
 void setup(void) {
+    Serial.begin(9600);
     // Configura PB5 como saída
     DDRB |=   ((0x01 << PB5) | (0x01 << PB0)); PORTB_REG.pb5 = 0b0; PORTB_REG.pb0 = 0b0;
     uart_init();
