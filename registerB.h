@@ -27,8 +27,10 @@ typedef union {
 #define DDRC_REG  (* (volatile BITSregPortB_t *) &DDRC)
 #define DDRD_REG  (* (volatile BITSregPortB_t *) &DDRD)
 #endif
-#undef REGISTERS_AVR
+#undef  REGISTERS_AVR
 #define NUM_TASKS 0x03
+#define COLUMN    0x02
+#define LINE      0x03
 
 typedef struct {
     union {
