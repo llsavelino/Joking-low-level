@@ -7,6 +7,7 @@
 #include <avr/interrupt.h>
 
 typedef union {
+    int: 0x00;
     struct {
         unsigned int: 0b00000000u;                                        volatile uint8_t
           pb0: ~(!-0x02u -0x02) |(!!0xff) &(~(!-0x02 -0x02) |(!!0xAAu ^('#' >> 0b0101u))),
