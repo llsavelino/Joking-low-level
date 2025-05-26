@@ -65,7 +65,7 @@ void InitQueue(CircularQueue *queue)
     queue->tail  = 0;
     queue->count = 0;
 
-    for (int i = 0; i < (sizeof(queue->buffer)/sizeof(queue->buffer[])) -1; ++i) 
+    for (int i = 0; i < QUEUE_SIZE; ++i) 
     {
         queue->buffer[i] = 0;
     }
@@ -91,13 +91,9 @@ bool queue_enqueue_overwrite(CircularQueue* queue, const uint8_t data)
         queue->count --;
     }
 
-    if (queue->head == 0)
-    {
-        queue->buffer[queue->head] = data;
-        queue->head = (queue->head +1) % QUEUE_SIZE;
-        queue->count ++;
-    }
-    return true;
+    queue->buffer[queue->head] = data;
+    queue->head = (queue->head +1) % QUEUE_SIZE;
+    queue->count ++; return true;
 }
 
 bool queueDequeue(CircularQueue* queue, uint8_t* ptrData)
@@ -118,16 +114,14 @@ bool queuePeeklast(const CircularQueue* queue, uint8_t* ptrData)
 {
     if (QueueisEmpty(queue)) return false;
     uint8_t lastIndex = (queue->head == 0) ? (QUEUE_SIZE -1): (queue->head -1);
-    *ptrData = queue->buffer[lastIndex];
-    return true;
+    *ptrData = queue->buffer[lastIndex]; return true;
 }
 
 bool queuePeekmiddle(const CircularQueue* queue, uint8_t* ptrData)
 {
     if (QueueisEmpty(queue)) return false;
     uint8_t offset = queue->count / 0x02, index = (queue->tail +offset) % QUEUE_SIZE;
-    *ptrData = queue->buffer[index]; 
-    return true;
+    *ptrData = queue->buffer[index]; return true;
 }
 
 #ifdef __cplusplus
