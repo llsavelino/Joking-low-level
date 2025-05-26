@@ -26,6 +26,9 @@ typedef union {
 #define DDRB_REG  (* (volatile BITSregPortB_t *) &DDRB)
 #define DDRC_REG  (* (volatile BITSregPortB_t *) &DDRC)
 #define DDRD_REG  (* (volatile BITSregPortB_t *) &DDRD)
+#define SPINB_REG (* (volatile BITSregPortB_t *) &PINB)
+#define SPINC_REG (* (volatile BITSregPortB_t *) &PINC)
+#define SPIND_REG (* (volatile BITSregPortB_t *) &PIND)
 #endif
 #undef  REGISTERS_AVR
 #define NUM_TASKS 0x03
