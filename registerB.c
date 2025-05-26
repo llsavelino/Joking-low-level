@@ -33,12 +33,13 @@ static operatingSystem tasks[NUM_TASKS] = {
     #warning NUM_TASKS não definida... Isso pode resultar em erro.
 #endif
 // Caixa de status do sistema...
-const char* monitor[3][2] = {
+#if defined(LINE) && defined(COLUMN)
+const char* monitor[LINE][COLUMN] = {
     {"Inicializando OS.\n\0", "Configurando timer 1, do atmega328p. \n.\0"},
     {"Abilitando flag no ciclo de interupição. \n\0", "Chamando tarefa. \n\0"},
     {"Executando... \n\0", "Encerando OS. \r\t\n\0"}
 };
-#if defined(PORTB_REG) || defined(PORTC_REG) || defined(PORTD_REG)
+#elif defined(PORTB_REG) || defined(PORTC_REG) || defined(PORTD_REG)
     #warning Tudo ok, hardware mapeado via software. Cuidado isso pode falhar!!
 void setup(void) {
     // Configura PB5 como saída
