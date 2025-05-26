@@ -7,7 +7,7 @@
 #include <avr/interrupt.h>
 
 typedef union {
-    int: 0x00;
+    signed int: 0x00;
     struct {
         unsigned int: 0b00000000u;                                        volatile uint8_t
           pb0: ~(!-0x02u -0x02) |(!!0xff) &(~(!-0x02 -0x02) |(!!0xAAu ^('#' >> 0b0101u))),
@@ -58,6 +58,77 @@ typedef struct {
     volatile bool          ok;                // Flag de execução
     uint8_t padding[  0x03  ]; // aproveitamento de pedaço para flags de usos especiais
 } operatingSystem; extern operatingSystem tasks[NUM_TASKS];
+
+void InitQueue(CircularQueue *queue) 
+{
+    queue->head  = 0;
+    queue->tail  = 0;
+    queue->count = 0;
+
+    for (int i = 0; i < (sizeof(queue->buffer)/sizeof(queue->buffer[])) -1; ++i) 
+    {
+        queue->buffer[i] = 0;
+    }
+}
+
+bool QueueisEmpty(const CircularQueue* Q) { return Q->count == 0b00000000; }
+bool Queueis_Full(const CircularQueue* Q) { return Q->count == QUEUE_SIZE; }
+
+bool queueEnqueue(CircularQueue* queue, const uint8_t data)
+{
+    if (Queueis_Full(queue)) return false;
+    queue->buffer[queue->head] = data;
+    queue->head = (queue->head +1) % QUEUE_SIZE;
+    queue->count ++; return true;
+}
+
+bool queue_enqueue_overwrite(CircularQueue* queue, const uint8_t data)
+{
+    if (Queueis_Full(queue))
+    {
+        // Avança o tail para "descartar" o dado mais antigo
+        queue->tail = (queue->tail +1) % QUEUE_SIZE;
+        queue->count --;
+    }
+
+    if (queue->head == 0)
+    {
+        queue->buffer[queue->head] = data;
+        queue->head = (queue->head +1) % QUEUE_SIZE;
+        queue->count ++;
+    }
+    return true;
+}
+
+bool queueDequeue(CircularQueue* queue, uint8_t* ptrData)
+{
+    if (QueueisEmpty(queue)) return false;
+    *ptrData = queue->buffer[queue->tail];
+    queue->tail = (queue->tail +1) % QUEUE_SIZE;
+    queue->count --; return true;
+}
+
+bool queuePeekfirst(const CircularQueue* queue, uint8_t* ptrData)
+{
+    if (QueueisEmpty(queue)) return false;
+    *ptrData = queue->buffer[queue->tail]; return true;
+}
+
+bool queuePeeklast(const CircularQueue* queue, uint8_t* ptrData)
+{
+    if (QueueisEmpty(queue)) return false;
+    uint8_t lastIndex = (queue->head == 0) ? (QUEUE_SIZE -1): (queue->head -1);
+    *ptrData = queue->buffer[lastIndex];
+    return true;
+}
+
+bool queuePeekmiddle(const CircularQueue* queue, uint8_t* ptrData)
+{
+    if (QueueisEmpty(queue)) return false;
+    uint8_t offset = queue->count / 0x02, index = (queue->tail +offset) % QUEUE_SIZE;
+    *ptrData = queue->buffer[index]; 
+    return true;
+}
 
 #ifdef __cplusplus
 extern "C" {
