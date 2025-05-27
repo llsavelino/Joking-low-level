@@ -180,6 +180,7 @@ bool queuePeeklast(const CircularQueue* queue, operatingSystem** ptrData)
 {
     if (QueueisEmpty(queue)) return false;
     uint8_t lastIndex = (queue->head == 0) ? (QUEUE_SIZE - 1) : (queue->head - 1);
+    if (!queue->buffer[lastIndex]) return false;
     *ptrData = queue->buffer[lastIndex];
     return true;
 }
