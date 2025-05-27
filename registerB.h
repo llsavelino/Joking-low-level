@@ -40,14 +40,6 @@ typedef union {
 #undef  REGISTERS_AVR
 
 typedef struct {
-    int: 0x00;
-    uint8_t buffer[QUEUE_SIZE];
-    uint8_t head;  // Índice para escrever
-    uint8_t tail;  // Índice para ler
-    uint8_t count; // Número de elementos na fila
-} CircularQueue; extern CircularQueue queueOS; 
-
-typedef struct {
     long: 0x00;
     union {
       void (*funcSp)                          (void);          // Ponteiro para a função da tarefa
@@ -58,6 +50,14 @@ typedef struct {
     volatile bool          ok;                // Flag de execução
     uint8_t padding[  0x03  ]; // aproveitamento de pedaço para flags de usos especiais
 } operatingSystem; extern operatingSystem tasks[NUM_TASKS];
+
+typedef struct {
+    int: 0x00;
+    uint8_t buffer[QUEUE_SIZE];
+    uint8_t head;  // Índice para escrever
+    uint8_t tail;  // Índice para ler
+    uint8_t count; // Número de elementos na fila
+} CircularQueue; extern CircularQueue queueOS; 
 
 void InitQueue(CircularQueue *queue) 
 {
