@@ -139,12 +139,14 @@ bool queue_enqueue_overwrite(CircularQueue* queue, operatingSystem* data)
 }
 
 // Remove um elemento da fila
-bool queueDequeue(CircularQueue* queue, operatingSystem** ptrData)
+bool queueDequeuePopFirst(CircularQueue* queue)
 {
     if (QueueisEmpty(queue)) return false;
-
-    *ptrData = queue->buffer[queue->tail]; // Retorna o ponteiro
-    queue->buffer[queue->tail] = NULL; // Limpa o slot
+    if (queue->buffer[queue->tail] != NULL)
+    {
+        free(queue->buffer[queue->tail]);
+        queue->buffer[queue->tail] = NULL;
+    }
     queue->tail = (queue->tail + 1) % QUEUE_SIZE;
     queue->count--;
     return true;
