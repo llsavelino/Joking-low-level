@@ -71,8 +71,8 @@ void InitQueue(CircularQueue *queue)
     }
 }
 
-bool QueueisEmpty(const CircularQueue* Q) { return Q->count == 0b00000000; }
-bool Queueis_Full(const CircularQueue* Q) { return Q->count == QUEUE_SIZE; }
+static bool QueueisEmpty(const CircularQueue* Q) { return Q->count == 0b00000000; }
+static bool Queueis_Full(const CircularQueue* Q) { return Q->count == QUEUE_SIZE; }
 
 bool queueEnqueue(CircularQueue* queue, const uint8_t data)
 {
