@@ -2,6 +2,7 @@
 #ifndef REGB_H
 #define REGB_H
 #include        <avr/io.h>
+#include        <stdlib.h>
 #include        <stdint.h>
 #include       <stdbool.h>
 #include <avr/interrupt.h>
@@ -67,8 +68,24 @@ void InitQueue(CircularQueue *queue)
 
     for (int i = 0; i < QUEUE_SIZE; ++i) 
     {
-        queue->buffer[i] = 0;
+        queue->buffer[i] = NULL;
     }
+}
+
+void FreeQueue(CircularQueue* queue)
+{
+    for (int i = 0; i < QUEUE_SIZE; ++i) 
+    {
+        if (queue->buffer[i] != NULL)
+        {
+            free(queue->buffer[i]);
+            queue->buffer[i] = NULL;
+        }
+    }
+
+    queue->head  = 0;
+    queue->tail  = 0;
+    queue->count = 0;
 }
 
 static bool QueueisEmpty(const CircularQueue* Q) { return Q->count == 0b00000000; }
