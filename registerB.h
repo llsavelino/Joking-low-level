@@ -40,39 +40,45 @@ typedef union {
 #endif
 #undef  REGISTERS_AVR
 
+// Estrutura para cada elemento do buffer
 typedef struct {
-    long: 0x00;
     union {
-      void (*funcSp)                          (void);          // Ponteiro para a função da tarefa
-      void (*funcCp)(volatile uint8_t, volatile int);
+        void (*funcSp)(void);                    // Ponteiro para função sem parâmetros
+        void (*funcCp)(volatile uint8_t, volatile int); // Ponteiro para função com parâmetros
     };
-    unsigned int      interval_ms;       // Intervalo de execução em ms
-    volatile unsigned int counter;  // Contador da tarefa
-    volatile bool          ok;                // Flag de execução
-    uint8_t padding[  0x03  ]; // aproveitamento de pedaço para flags de usos especiais
-} operatingSystem; extern operatingSystem tasks[NUM_TASKS];
+    unsigned int interval_ms; // Intervalo de execução em ms
+    volatile unsigned int counter; // Contador da tarefa
+    volatile bool ok; // Flag de execução
+    uint8_t padding[3]; // Aproveitamento para flags
+} operatingSystem;
 
+extern operatingSystem tasks[NUM_TASKS];
+
+// Estrutura da fila circular
 typedef struct {
-    int: 0x00;
-    uint8_t buffer[QUEUE_SIZE];
+    operatingSystem* buffer[QUEUE_SIZE]; // Array de ponteiros para operatingSystem
     uint8_t head;  // Índice para escrever
     uint8_t tail;  // Índice para ler
     uint8_t count; // Número de elementos na fila
-} CircularQueue; extern CircularQueue queueOS; 
+} CircularQueue;
 
+extern CircularQueue queueOS;
+
+// Inicializa a fila
 void InitQueue(CircularQueue *queue) 
 {
-    queue->head  = 0;
-    queue->tail  = 0;
+    queue->head = 0;
+    queue->tail = 0;
     queue->count = 0;
 
     for (int i = 0; i < QUEUE_SIZE; ++i) 
     {
-        queue->buffer[i] = NULL;
+        queue->buffer[i] = NULL; // Inicializa os ponteiros como NULL
     }
 }
 
-void FreeQueue(CircularQueue* queue)
+// Libera a memória de todos os elementos na fila
+void FreeQueue(CircularQueue *queue)
 {
     for (int i = 0; i < QUEUE_SIZE; ++i) 
     {
@@ -82,63 +88,108 @@ void FreeQueue(CircularQueue* queue)
             queue->buffer[i] = NULL;
         }
     }
-
-    queue->head  = 0;
-    queue->tail  = 0;
+    queue->head = 0;
+    queue->tail = 0;
     queue->count = 0;
 }
 
-static bool QueueisEmpty(const CircularQueue* Q) { return Q->count == 0b00000000; }
+// Verifica se a fila está vazia
+static bool QueueisEmpty(const CircularQueue* Q) { return Q->count == 0; }
+// Verifica se a fila está cheia
 static bool Queueis_Full(const CircularQueue* Q) { return Q->count == QUEUE_SIZE; }
 
-bool queueEnqueue(CircularQueue* queue, const uint8_t data)
+// Adiciona um elemento à fila
+bool queueEnqueue(CircularQueue* queue, operatingSystem* data)
 {
     if (Queueis_Full(queue)) return false;
-    queue->buffer[queue->head] = data;
-    queue->head = (queue->head +1) % QUEUE_SIZE;
-    queue->count ++; return true;
-}
 
-bool queue_enqueue_overwrite(CircularQueue* queue, const uint8_t data)
-{
-    if (Queueis_Full(queue))
-    {
-        // Avança o tail para "descartar" o dado mais antigo
-        queue->tail = (queue->tail +1) % QUEUE_SIZE;
-        queue->count --;
+    if (queue->buffer[queue->head] != NULL) {
+        free(queue->buffer[queue->head]);
+        queue->buffer[queue->head] = NULL;
     }
 
     queue->buffer[queue->head] = data;
-    queue->head = (queue->head +1) % QUEUE_SIZE;
-    queue->count ++; return true;
+    queue->head = (queue->head + 1) % QUEUE_SIZE;
+    queue->count++;
+    return true;
 }
 
-bool queueDequeue(CircularQueue* queue, uint8_t* ptrData)
+// Adiciona um elemento à fila, sobrescrevendo se cheia
+bool queue_enqueue_overwrite(CircularQueue* queue, operatingSystem* data)
+{
+    if (Queueis_Full(queue))
+    {
+        if (queue->buffer[queue->tail] != NULL) {
+            free(queue->buffer[queue->tail]);
+            queue->buffer[queue->tail] = NULL;
+        }
+        queue->tail = (queue->tail + 1) % QUEUE_SIZE;
+        queue->count--;
+    }
+
+    if (queue->buffer[queue->head] != NULL) {
+        free(queue->buffer[queue->head]);
+        queue->buffer[queue->head] = NULL;
+    }
+
+    queue->buffer[queue->head] = data;
+    queue->head = (queue->head + 1) % QUEUE_SIZE;
+    queue->count++;
+    return true;
+}
+
+// Remove um elemento da fila
+bool queueDequeue(CircularQueue* queue, operatingSystem** ptrData)
+{
+    if (QueueisEmpty(queue)) return false;
+
+    *ptrData = queue->buffer[queue->tail]; // Retorna o ponteiro
+    queue->buffer[queue->tail] = NULL; // Limpa o slot
+    queue->tail = (queue->tail + 1) % QUEUE_SIZE;
+    queue->count--;
+    return true;
+}
+
+// Deleta o último item da fila e libera sua memória
+bool queueDequeuePopLast(CircularQueue* queue)
+{
+    if (QueueisEmpty(queue)) return false;
+
+    uint8_t lastIndex = (queue->head == 0) ? (QUEUE_SIZE - 1) : (queue->head - 1);
+    if (queue->buffer[lastIndex] != NULL) {
+        free(queue->buffer[lastIndex]);
+        queue->buffer[lastIndex] = NULL;
+    }
+    queue->head = lastIndex;
+    queue->count--;
+    return true;
+}
+
+// Espia o primeiro elemento da fila
+bool queuePeekfirst(const CircularQueue* queue, operatingSystem** ptrData)
 {
     if (QueueisEmpty(queue)) return false;
     *ptrData = queue->buffer[queue->tail];
-    queue->tail = (queue->tail +1) % QUEUE_SIZE;
-    queue->count --; return true;
+    return true;
 }
 
-bool queuePeekfirst(const CircularQueue* queue, uint8_t* ptrData)
+// Espia o último elemento da fila
+bool queuePeeklast(const CircularQueue* queue, operatingSystem** ptrData)
 {
     if (QueueisEmpty(queue)) return false;
-    *ptrData = queue->buffer[queue->tail]; return true;
+    uint8_t lastIndex = (queue->head == 0) ? (QUEUE_SIZE - 1) : (queue->head - 1);
+    *ptrData = queue->buffer[lastIndex];
+    return true;
 }
 
-bool queuePeeklast(const CircularQueue* queue, uint8_t* ptrData)
+// Espia o elemento do meio da fila
+bool queuePeekmiddle(const CircularQueue* queue, operatingSystem** ptrData)
 {
     if (QueueisEmpty(queue)) return false;
-    uint8_t lastIndex = (queue->head == 0) ? (QUEUE_SIZE -1): (queue->head -1);
-    *ptrData = queue->buffer[lastIndex]; return true;
-}
-
-bool queuePeekmiddle(const CircularQueue* queue, uint8_t* ptrData)
-{
-    if (QueueisEmpty(queue)) return false;
-    uint8_t offset = queue->count / 0x02, index = (queue->tail +offset) % QUEUE_SIZE;
-    *ptrData = queue->buffer[index]; return true;
+    uint8_t offset = queue->count / 2;
+    uint8_t index = (queue->tail + offset) % QUEUE_SIZE;
+    *ptrData = queue->buffer[index];
+    return true;
 }
 
 #ifdef __cplusplus
