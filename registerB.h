@@ -168,7 +168,7 @@ bool queueDequeuePopLast(CircularQueue* queue)
 }
 
 // Espia o primeiro elemento da fila
-bool queuePeekfirst(const CircularQueue* queue, operatingSystem** ptrData)
+bool queuePeekfirst(const CircularQueue* queue, operatingSystem* ptrData)
 {
     if (QueueisEmpty(queue)) return false;
     *ptrData = queue->buffer[queue->tail];
@@ -176,7 +176,7 @@ bool queuePeekfirst(const CircularQueue* queue, operatingSystem** ptrData)
 }
 
 // Espia o último elemento da fila
-bool queuePeeklast(const CircularQueue* queue, operatingSystem** ptrData)
+bool queuePeeklast(const CircularQueue* queue, operatingSystem* ptrData)
 {
     if (QueueisEmpty(queue)) return false;
     uint8_t lastIndex = (queue->head == 0) ? (QUEUE_SIZE - 1) : (queue->head - 1);
@@ -186,7 +186,7 @@ bool queuePeeklast(const CircularQueue* queue, operatingSystem** ptrData)
 }
 
 // Espia o elemento do meio da fila
-bool queuePeekmiddle(const CircularQueue* queue, operatingSystem** ptrData)
+bool queuePeekmiddle(const CircularQueue* queue, operatingSystem* ptrData)
 {
     if (QueueisEmpty(queue)) return false;
     uint8_t offset = queue->count / 2;
