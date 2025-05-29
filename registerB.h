@@ -76,6 +76,7 @@ void InitQueue(CircularQueue *queue)
     {
         queue->buffer[i] = NULL; // Inicializa os ponteiros como NULL
     }
+    return;
 }
 
 // Libera a memória de todos os elementos na fila
@@ -92,6 +93,7 @@ void FreeQueue(CircularQueue *queue)
     queue->head = 0;
     queue->tail = 0;
     queue->count = 0;
+    return;
 }
 
 // Verifica se a fila está vazia
