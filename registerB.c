@@ -46,6 +46,10 @@ void setup(void) {
     DDRB |=   ((0x01 << PB5) | (0x01 << PB0)); PORTB_REG.pb5 = 0b0; PORTB_REG.pb0 = 0b0;
     InitQueue(&queueOS);
     
+    queueEnqueue(&queueOS, &tasks[0x00]);
+    queueEnqueue(&queueOS, &tasks[0x01]);
+    queueEnqueue(&queueOS, &tasks[0x02]);
+    
     // Configura Timer1 em modo CTC com prescaler 64
     TCCR1A = 0;
     TCCR1B = (1 << WGM12) | (0 << CS12) |(1 << CS11) | (1 << CS10); // 64x prescaler, modo CTC
