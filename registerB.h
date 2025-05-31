@@ -43,8 +43,12 @@ typedef union {
 // Estrutura para cada elemento do buffer
 typedef struct {
     union {
-        void (*funcSp)(void);                    // Ponteiro para função sem parâmetros
-        void (*funcCp)(volatile uint8_t, volatile int); // Ponteiro para função com parâmetros
+        void (*funcSp)                          (void);
+        void (*funcCp)(volatile uint8_t, volatile int);
+        void (*funcCpS)                  (const char*);
+        void (*funcCpI)                          (int);
+        int (*IntfuncCp0)                       (void);
+        int (*IntfuncCp1)                        (int);
     };
     unsigned int interval_ms; // Intervalo de execução em ms
     volatile unsigned int counter; // Contador da tarefa
@@ -68,11 +72,11 @@ extern CircularQueue queueOS;
 // Inicializa a fila
 void InitQueue(CircularQueue *queue) 
 {
-    queue->head = 0;
-    queue->tail = 0;
+    queue->head  = 0;
+    queue->tail  = 0;
     queue->count = 0;
 
-    for (int i = 0; i < QUEUE_SIZE; ++i) 
+    for (uint8_t i = 0; i < QUEUE_SIZE; ++i) 
     {
         queue->buffer[i] = NULL; // Inicializa os ponteiros como NULL
     }
@@ -82,7 +86,7 @@ void InitQueue(CircularQueue *queue)
 // Libera a memória de todos os elementos na fila
 void FreeQueue(CircularQueue *queue)
 {
-    for (int i = 0; i < QUEUE_SIZE; ++i) 
+    for (uint8_t i = 0; i < QUEUE_SIZE; ++i) 
     {
         if (queue->buffer[i] != NULL)
         {
@@ -90,14 +94,14 @@ void FreeQueue(CircularQueue *queue)
             queue->buffer[i] = NULL;
         }
     }
-    queue->head = 0;
-    queue->tail = 0;
+    queue->head  = 0;
+    queue->tail  = 0;
     queue->count = 0;
     return;
 }
 
 // Verifica se a fila está vazia
-static bool QueueisEmpty(const CircularQueue* Q) { return Q->count == 0; }
+static bool QueueisEmpty(const CircularQueue* Q) { return Q->count == 0b00000000; }
 // Verifica se a fila está cheia
 static bool Queueis_Full(const CircularQueue* Q) { return Q->count == QUEUE_SIZE; }
 
@@ -162,7 +166,7 @@ bool queueDequeuePopLast(CircularQueue* queue)
 {
     if (QueueisEmpty(queue)) return false;
 
-    uint8_t lastIndex = (queue->head == 0) ? (QUEUE_SIZE - 1) : (queue->head - 1);
+    uint8_t lastIndex = (queue->head == 0) ? (QUEUE_SIZE -1) : (queue->head -1);
     if (queue->buffer[lastIndex] != NULL)
     {
         free(queue->buffer[lastIndex]);
@@ -187,7 +191,7 @@ bool queuePeeklast(const CircularQueue* queue, operatingSystem* ptrData)
 {
     if (QueueisEmpty(queue)) return false;
     
-    uint8_t lastIndex = (queue->head == 0) ? (QUEUE_SIZE - 1) : (queue->head - 1);
+    uint8_t lastIndex = (queue->head == 0) ? (QUEUE_SIZE -1) : (queue->head -1);
     
     if (!queue->buffer[lastIndex]) return false;
     
