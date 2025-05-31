@@ -11,7 +11,7 @@ static volatile uint8_t pwm = 0; static volatile int posineg = 1;
 
 // Inicializa a tarefa
 #ifdef NUM_TASKS
-static operatingSystem tasks[NUM_TASKS] = {
+operatingSystem tasks[NUM_TASKS] = {
     { .funcSp = toggle, .interval_ms = 0x1F4, .counter = 0x00, .ok = false, .padding = 
         {
             /* no args */ 0b00000000, 0b00000000, 0b00000000
