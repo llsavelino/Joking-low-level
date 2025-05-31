@@ -1,7 +1,9 @@
-#include <avr/io.h>
-#include <stdbool.h>
+#include        <avr/io.h>
+#include        <stdlib.h>
+#include        <stdint.h>
+#include       <stdbool.h>
 #include <avr/interrupt.h>
-#include "registerB.h"
+#include     "registerB.h"
 
 // Protótipo correto da função
 static void toggle(void); static void analog(volatile uint8_t, volatile int); static void status(void);
