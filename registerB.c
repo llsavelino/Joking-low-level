@@ -7,24 +7,28 @@
 
 // Protótipo correto da função
 static void toggle(void); static void analog(volatile uint8_t, volatile int); static void status(void);
-static volatile uint8_t pwm = 0; static volatile int posineg = 1;
+static volatile uint8_t pwm = 0;                                       static volatile int posineg = 1;
 
 // Inicializa a tarefa
 #ifdef NUM_TASKS
-operatingSystem tasks[NUM_TASKS] = {
-    { .funcSp = toggle, .interval_ms = 0x1F4, .counter = 0x00, .ok = false, .padding = 
+operatingSystem tasks[NUM_TASKS] = 
+{
+    { .funcSp = toggle, .interval_ms = 0x1F4, .counter = 0x00, .ok = false, 
+      .padding                                                            = 
         {
             /* no args */ 0b00000000, 0b00000000, 0b00000000
         }                 // arg      qnt         type
     }
     ,
-    { .funcCp = analog, .interval_ms = 0x1F4, .counter = 0x00, .ok = false, .padding =
+    { .funcCp = analog, .interval_ms = 0x1F4, .counter = 0x00, .ok = false, 
+      .padding                                                            =
         {
             /* args */ 0b00000001, 0b00000010, 0b00000000
         }              // arg      qnt         type
     }
     ,
-    { .funcSp = status, .interval_ms = 0x64, .counter = 0x00, .ok = false, .padding =
+    { .funcSp = status, .interval_ms = 0x64, .counter = 0x00, .ok = false, 
+      .padding                                                           =
         {
             /* no args */ 0b00000000, 0b00000000, 0b00000000 
         }                 // arg      qnt         type
@@ -35,17 +39,20 @@ operatingSystem tasks[NUM_TASKS] = {
 #endif
 // Caixa de status do sistema...
 #if defined(LINE) && defined(COLUMN)
-const char* monitor[LINE][COLUMN] = {
-    {"Inicializando OS.\n\0", "Configurando timer 1, do atmega328p. \n.\0"},
+const char* monitor[LINE][COLUMN] = 
+{
+    {"Inicializando OS.\r\n\0", "Configurando timer 1, do atmega328p. \n\0"},
     {"Abilitando flag no ciclo de interupição. \n\0", "Chamando tarefa. \n\0"},
-    {"Executando... \n\0", "Encerando OS. \r\t\n\0"}
+    {"Executando... \n\0", "Encerando OS. \r\n\0"}
 };
 #elif defined(PORTB_REG) || defined(PORTC_REG) || defined(PORTD_REG)
     #warning Tudo ok, hardware mapeado via software. Cuidado isso pode falhar!!
-void setup(void) {
+void setup(void) 
+{
     Serial.begin(9600);
     // Configura PB5 como saída
     DDRB |=   ((0x01 << PB5) | (0x01 << PB0)); PORTB_REG.pb5 = 0b0; PORTB_REG.pb0 = 0b0;
+    
     InitQueue(&queueOS);
     
     queueEnqueue(&queueOS, &tasks[0x00]);
@@ -64,31 +71,42 @@ void setup(void) {
 
 }
 
-void loop(void) {
-    for (int i = 0x00; i < NUM_TASKS; ++i) {
-        if (tasks[i].ok) {
+void loop(void) 
+{
+    for (int i = 0x00; i < NUM_TASKS; ++i) 
+    {
+        if (tasks[i].ok && (tasks[i].funcSp || tasks[i].funcCp)) 
+        {
             tasks[i].ok = false;
-            if      (i == 0x00 && tasks[i].padding[i - i] == 0 && tasks[i].padding[1] < 1) tasks[i].funcSp(            );
-            else if (i == 0x01 && tasks[i].padding[i - i] != 0 && tasks[i].padding[1] > 1) tasks[i].funcCp(pwm, posineg);
-            else                                                                           tasks[i].funcSp(            );
+            if      (i == 0x00 && queueOS.buffer[i]->padding[i - i] == 0 && queueOS.buffer[i]->padding[1] < 1)
+            {
+                 queueOS.buffer[i]->funcSp(            );
+            }
+            else if (i == 0x01 && queueOS.buffer[i]->padding[i - i] != 0 && queueOS.buffer[i]->padding[1] > 1)
+            {
+                 queueOS.buffer[i]->funcCp(pwm, posineg);
+            }
+            else queueOS.buffer[i]->funcSp(            );
         }
     }
 }
 
 // Interrupção de Timer1 a cada 1ms
-ISR(TIMER1_COMPA_vect) {
-    for (int i = 0x00; i < NUM_TASKS; ++i) {
+ISR(TIMER1_COMPA_vect) 
+{
+    for (int i = 0x00; i < NUM_TASKS; ++i)
+    {
         
-        tasks[i].counter++;
-        
+        tasks[i].counter                                                                         ++;
         if (tasks[i].counter >= tasks[i].interval_ms) { tasks[i].counter = 0x00; tasks[i].ok = true; }
+        
     }
 }
 
 // Alterna o estado de PB5 (LED)
-static void toggle(void) { PORTB_REG.pb5 ^= 0x01; }
+static void toggle(void)                                                                   { PORTB_REG.pb5 ^= 0x01; }
 static void analog(volatile uint8_t i, volatile int y) { i += y; if (i == 0xff || i == 0x00) { y = -y; } OCR2B = i; }
-static void status(void) { Serial.print("Sistema operacional Cooperativo atuando para PB5 & PB0.\n"); }
+static void status(void)               { Serial.print("Sistema operacional Cooperativo atuando para PB5 & PB0.\n"); }
 #else
     #error Registrador do microcontrolador não configurado... Mapeamento via software falhou!!
 #endif
