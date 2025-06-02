@@ -54,7 +54,6 @@ static const char* monitor[LINE][COLUMN] =
     #warning Tudo ok, hardware mapeado via software. Cuidado isso pode falhar!!
 void setup(void) 
 {
-    Serial.begin(9600);
     // Configura PB5 como saída
     DDRB |=   ((0x01 << PB5) | (0x01 << PB0)); PORTB_REG.pb5 = 0b0; PORTB_REG.pb0 = 0b0;
     
@@ -113,7 +112,7 @@ ISR /* Interrupção de Timer1 a cada 1ms */ (TIMER1_COMPA_vect)
 // Alterna o estado de PB5 (LED)
 static void toggle(void)                                                                   { PORTB_REG.pb5 ^= 0x01; }
 static void analog(volatile uint8_t i, volatile int y) { i += y; if (i == 0xff || i == 0x00) { y = -y; } OCR2B = i; }
-static void status(void)               { Serial.print("Sistema operacional Cooperativo atuando para PB5 & PB0.\n"); }
+static void status(void) { }
 #else
     #error Registrador do microcontrolador não configurado... Mapeamento via software falhou!!
 #endif
