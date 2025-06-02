@@ -63,6 +63,7 @@ void setup(void)
     queueEnqueue /* Inserindo na frente */ (&queueOS, &tasks[0x00]);
     queueEnqueue /* Inserindo na frente */ (&queueOS, &tasks[0x01]);
     queueEnqueue /* Inserindo na frente */ (&queueOS, &tasks[0x02]);
+    Serial_print(monitor[0][0]);
     
     // Configura Timer1 em modo CTC com prescaler 64
     TCCR1A = 0;
@@ -73,6 +74,7 @@ void setup(void)
     // --- Configura Timer2 para Fast PWM no pino OC2B ---
     TCCR2A = (1 << COM2B1) | (1 << WGM21) | (1 << WGM20); // Fast PWM, não-invertido
     TCCR2B = (1 << CS21); /* Prescaler = 8 */ OCR2B = pwm;
+    Serial_print(Serial_print[0][1]);
 
 }
 
@@ -85,15 +87,15 @@ void loop(void)
             tasks[i].ok = false;
             if      (i == 0x00 && queueOS.buffer[i]->padding[i - i] == 0 && queueOS.buffer[i]->padding[1] < +1)
             {
-                 (tasks[i].funcSp == NULL) ? watchdog(    ) : queueOS.buffer[i]->funcSp(            );
+                 (tasks[i].funcSp == NULL) ? watchdog(    ); Serial_print(monitor[2][1]) : queueOS.buffer[i]->funcSp(            );
             }
             else if (i == 0x01 && queueOS.buffer[i]->padding[i - i] != 0 && queueOS.buffer[i]->padding[1] > +1)
             {
-                 (tasks[i].funcCp == NULL) ? watchdog(    ) : queueOS.buffer[i]->funcCp(pwm, posineg);
+                 (tasks[i].funcCp == NULL) ? watchdog(    ); Serial_print(monitor[2][1]) : queueOS.buffer[i]->funcCp(pwm, posineg);
             }
             else
             {
-                (tasks[i].funcSp == NULL) ? watchdog(    ) : queueOS.buffer[i]->funcSp(            );
+                 (tasks[i].funcSp == NULL) ? watchdog(    ); Serial_print(monitor[2][1]) : queueOS.buffer[i]->funcSp(            );
             }
         }
     }
@@ -104,8 +106,12 @@ ISR /* Interrupção de Timer1 a cada 1ms */ (TIMER1_COMPA_vect)
     for (int i = 0x00; i < NUM_TASKS; ++i)
     {
         
-        tasks[i].counter                                                                         ++;
-        if (tasks[i].counter >= tasks[i].interval_ms) { tasks[i].counter = 0x00; tasks[i].ok = true; }
+        tasks[i].counter ++;
+        if (tasks[i].counter >= tasks[i].interval_ms) 
+        { 
+            tasks[i].counter = 0x00; tasks[i].ok = true; 
+            Serial_print(monitor[1][0] + ' ' + monitor[1][1] + ' ' + monitor[2][0]);
+        }
         
     }
 }
