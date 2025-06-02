@@ -5,6 +5,7 @@
 auto main (int argc, const char **argv, const char **envp) 
 ->                                              signed int 
 {
+    Serial.begin                                   (9600);
     cli(); /* Habilita a mudança de clock */       CLKPR =
     (0x01                                      << CLKPCE);
     CLKPR =                              (0x01 << CLKPS0); 
