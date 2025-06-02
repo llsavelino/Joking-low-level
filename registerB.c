@@ -56,11 +56,11 @@ void setup(void)
     // Configura PB5 como saída
     DDRB |=   ((0x01 << PB5) | (0x01 << PB0)); PORTB_REG.pb5 = 0b0; PORTB_REG.pb0 = 0b0;
     
-    InitQueue(&queueOS);
+    InitQueue /* Inicialização da Fila circular para manipulação de tarefas do OS */ (&queueOS);
     
-    queueEnqueue(&queueOS, &tasks[0x00]);
-    queueEnqueue(&queueOS, &tasks[0x01]);
-    queueEnqueue(&queueOS, &tasks[0x02]);
+    queueEnqueue /* Inserindo na frente */ (&queueOS, &tasks[0x00]);
+    queueEnqueue /* Inserindo na frente */ (&queueOS, &tasks[0x01]);
+    queueEnqueue /* Inserindo na frente */ (&queueOS, &tasks[0x02]);
     
     // Configura Timer1 em modo CTC com prescaler 64
     TCCR1A = 0;
@@ -89,13 +89,15 @@ void loop(void)
             {
                  (tasks[i].funcCp == NULL) ? watchdog(    ) : queueOS.buffer[i]->funcCp(pwm, posineg);
             }
-            else (tasks[i].funcSp == NULL) ? watchdog(    ) : queueOS.buffer[i]->funcSp(            );
+            else
+            {
+                (tasks[i].funcSp == NULL) ? watchdog(    ) : queueOS.buffer[i]->funcSp(            );
+            }
         }
     }
 }
 
-// Interrupção de Timer1 a cada 1ms
-ISR(TIMER1_COMPA_vect) 
+ISR /* Interrupção de Timer1 a cada 1ms */ (TIMER1_COMPA_vect) 
 {
     for (int i = 0x00; i < NUM_TASKS; ++i)
     {
