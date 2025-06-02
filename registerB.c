@@ -112,7 +112,7 @@ ISR /* Interrupção de Timer1 a cada 1ms */ (TIMER1_COMPA_vect)
 // Alterna o estado de PB5 (LED)
 static void toggle(void)                                                                   { PORTB_REG.pb5 ^= 0x01; }
 static void analog(volatile uint8_t i, volatile int y) { i += y; if (i == 0xff || i == 0x00) { y = -y; } OCR2B = i; }
-static void status(void) { }
+static void status(void)                                       { Serial_print("Sistema operacional em execução\n"); }
 #else
     #error Registrador do microcontrolador não configurado... Mapeamento via software falhou!!
 #endif
