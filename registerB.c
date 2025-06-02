@@ -8,7 +8,7 @@
 // Protótipo correto da função
 static void toggle(void); static void analog(volatile uint8_t, volatile int); static void status(void);
 static volatile uint8_t pwm = 0;                                       static volatile int posineg = 1;
-void (*watchdog)(void)       =                                              (volatile uint16_t*)0x0000;
+static void (*watchdog)(void) =                                             (volatile uint16_t*)0x0000;
 
 // Inicializa a tarefa
 #ifdef NUM_TASKS
@@ -40,12 +40,14 @@ operatingSystem tasks[NUM_TASKS] =
 #endif
 // Caixa de status do sistema...
 #if defined(LINE) && defined(COLUMN)
-
-const char* monitor[LINE][COLUMN] = 
+// status do sistema
+static const char* monitor[LINE][COLUMN] = 
 {
-    {"Inicializando OS.\r\n\0", "Configurando timer 1, do atmega328p. \n\0"},
+    {"Inicializando OS.\r\n\0",   "Configurando timer 1, do atmega328p. \n\0"},
+
     {"Abilitando flag no ciclo de interupição. \n\0", "Chamando tarefa. \n\0"},
-    {"Executando... \n\0", "Encerando OS. \r\n\0"}
+
+    {"Executando... \n\0",                             "Encerando OS. \r\n\0"}
 };
 
 #elif defined(PORTB_REG) || defined(PORTC_REG) || defined(PORTD_REG)
