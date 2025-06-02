@@ -1,15 +1,12 @@
-#ifndef FUNCPRINT
-#define FUNCPRINT
-
-#ifdef __cplusplus
-extern "C" 
+#ifndef               FUNCPRINT
+#define               FUNCPRINT
+#include            <Arduino.h>
+#ifdef              __cplusplus
+extern                      "C" 
 {
-#endif
-
+#                         endif
 void Serial_print(const char*);
-
-#ifdef __cplusplus
+#ifdef              __cplusplus
 }
-#endif
-
-#endif
+#                         endif
+#                         endif
