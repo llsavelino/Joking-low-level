@@ -8,6 +8,7 @@
 // Protótipo correto da função
 static void toggle(void); static void analog(volatile uint8_t, volatile int); static void status(void);
 static volatile uint8_t pwm = 0;                                       static volatile int posineg = 1;
+void (*watchdog)(void)       =                                                                  0x0000;
 
 // Inicializa a tarefa
 #ifdef NUM_TASKS
@@ -39,12 +40,14 @@ operatingSystem tasks[NUM_TASKS] =
 #endif
 // Caixa de status do sistema...
 #if defined(LINE) && defined(COLUMN)
+
 const char* monitor[LINE][COLUMN] = 
 {
     {"Inicializando OS.\r\n\0", "Configurando timer 1, do atmega328p. \n\0"},
     {"Abilitando flag no ciclo de interupição. \n\0", "Chamando tarefa. \n\0"},
     {"Executando... \n\0", "Encerando OS. \r\n\0"}
 };
+
 #elif defined(PORTB_REG) || defined(PORTC_REG) || defined(PORTD_REG)
     #warning Tudo ok, hardware mapeado via software. Cuidado isso pode falhar!!
 void setup(void) 
@@ -80,13 +83,13 @@ void loop(void)
             tasks[i].ok = false;
             if      (i == 0x00 && queueOS.buffer[i]->padding[i - i] == 0 && queueOS.buffer[i]->padding[1] < 1)
             {
-                 queueOS.buffer[i]->funcSp(            );
+                 (!tasks[i].funcSp) ? watchdog(    ) : queueOS.buffer[i]->funcSp(            );
             }
             else if (i == 0x01 && queueOS.buffer[i]->padding[i - i] != 0 && queueOS.buffer[i]->padding[1] > 1)
             {
-                 queueOS.buffer[i]->funcCp(pwm, posineg);
+                 (!tasks[i].funcCp) ? watchdog(    ) : queueOS.buffer[i]->funcCp(pwm, posineg);
             }
-            else queueOS.buffer[i]->funcSp(            );
+            else (!tasks[i].funcSp) ? watchdog(    ) : queueOS.buffer[i]->funcSp(            );
         }
     }
 }
