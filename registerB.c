@@ -46,9 +46,9 @@ static const char* monitor[LINE][COLUMN] =
 {
     {"Inicializando OS.\r\n\0",   "Configurando timer 1, do atmega328p. \n\0"},
 
-    {"Abilitando flag no ciclo de interupição. \n\0", "Chamando tarefa. \n\0"},
+    {"Abilitando flag no ciclo de interupição. \n",    "Chamando tarefa. \n"},
 
-    {"Executando... \n\0",                             "Encerando OS. \r\n\0"}
+    {"Executando... \n",                               "Encerando OS. \r\n\0"}
 };
 
 #elif defined(PORTB_REG) || defined(PORTC_REG) || defined(PORTD_REG)
