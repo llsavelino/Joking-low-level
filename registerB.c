@@ -78,18 +78,18 @@ void loop(void)
 {
     for (int i = 0x00; i < NUM_TASKS; ++i) 
     {
-        if (tasks[i].ok && (tasks[i].funcSp || tasks[i].funcCp)) 
+        if (tasks[i].ok) 
         {
             tasks[i].ok = false;
-            if      (i == 0x00 && queueOS.buffer[i]->padding[i - i] == 0 && queueOS.buffer[i]->padding[1] < 1)
+            if      (i == 0x00 && queueOS.buffer[i]->padding[i - i] == 0 && queueOS.buffer[i]->padding[1] < +1)
             {
-                 (!tasks[i].funcSp) ? watchdog(    ) : queueOS.buffer[i]->funcSp(            );
+                 (tasks[i].funcSp == NULL) ? watchdog(    ) : queueOS.buffer[i]->funcSp(            );
             }
-            else if (i == 0x01 && queueOS.buffer[i]->padding[i - i] != 0 && queueOS.buffer[i]->padding[1] > 1)
+            else if (i == 0x01 && queueOS.buffer[i]->padding[i - i] != 0 && queueOS.buffer[i]->padding[1] > +1)
             {
-                 (!tasks[i].funcCp) ? watchdog(    ) : queueOS.buffer[i]->funcCp(pwm, posineg);
+                 (tasks[i].funcCp == NULL) ? watchdog(    ) : queueOS.buffer[i]->funcCp(pwm, posineg);
             }
-            else (!tasks[i].funcSp) ? watchdog(    ) : queueOS.buffer[i]->funcSp(            );
+            else (tasks[i].funcSp == NULL) ? watchdog(    ) : queueOS.buffer[i]->funcSp(            );
         }
     }
 }
