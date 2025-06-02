@@ -8,7 +8,7 @@
 // Protótipo correto da função
 static void toggle(void); static void analog(volatile uint8_t, volatile int); static void status(void);
 static volatile uint8_t pwm = 0;                                       static volatile int posineg = 1;
-void (*watchdog)(void)       =                                                                  0x0000;
+void (*watchdog)(void)       =                                              (volatile uint16_t*)0x0000;
 
 // Inicializa a tarefa
 #ifdef NUM_TASKS
