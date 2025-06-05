@@ -55,7 +55,6 @@ typedef struct {
     unsigned int interval_ms; // Intervalo de execução em ms
     volatile unsigned int counter; // Contador da tarefa
     volatile bool ok; // Flag de execução
-    int priority;
     uint8_t padding[3]; // Aproveitamento para flags
 } operatingSystem;
 
