@@ -68,6 +68,7 @@ typedef struct {
 } CircularQueue;
 
 extern CircularQueue queueOS;
+extern CircularQueue queueRTOS;
 
 // Inicializa a fila
 void InitQueue(CircularQueue *queue) 
