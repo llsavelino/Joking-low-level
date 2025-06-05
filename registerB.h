@@ -28,6 +28,7 @@ typedef union {
 #define QUEUE_SIZE 0x03
 #define COLUMN     0x02
 #define LINE       0x03
+
 #ifndef REGISTERS_AVR
 #define REGISTERS_AVR
 #define PORTB_REG (* (volatile BITSregPortB_t *)&PORTB)
